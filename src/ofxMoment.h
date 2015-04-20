@@ -84,17 +84,19 @@ public:
     
     int years();
     void years(int year);
-    
+    int diff(ofxMoment& moment, string timeUnit="ms");
+    static int diff(ofxMoment& a, ofxMoment& b, string timeUnit="ms");
     void add(int num, string timeUnit);
     void subtract(int num, string timeUnit);
-    
-    
-    static DT getDT(Poco::DateTime datetime);
     DT getDT();
-private:
+protected:
     Poco::DateTime currDT;
     bool valid;
     
     bool assignDT(Poco::DateTime& datetime, DT dt);
     bool validDT(DT dt);
+    
+    void add(Poco::DateTime& datetime, int num, string timeUnit);
+    Poco::Timespan diff(Poco::DateTime& datetime);
+    static DT getDT(Poco::DateTime datetime);
 };

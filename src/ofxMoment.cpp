@@ -131,27 +131,32 @@ void ofxMoment::years(int year){
     assignDT(currDT, dt);
 }
 
+
 void ofxMoment::add(int num, string timeUnit){
+    add(currDT, num, timeUnit);
+}
+
+void ofxMoment::add(Poco::DateTime& datettime, int num, string timeUnit){
     Poco::Timespan ts;
     if(timeUnit == "years" || timeUnit == "y"){
-        DT dt = getDT(currDT);
+        DT dt = getDT(datettime);
         dt.year += num;
-        assignDT(currDT, dt);
+        assignDT(datettime, dt);
         return;
     }
     else if(timeUnit == "months" || timeUnit == "M"){
         int m = months()+num;
         if(m <= 0){
             int yDiff = 0;
-            DT dt = getDT(currDT);
+            DT dt = getDT(datettime);
             dt.year += floor(m/12)-1;
             dt.month = ((11-m)%12)+1;
-            assignDT(currDT, dt);
+            assignDT(datettime, dt);
         }
         else{
             months(m);
         }
-
+        
         return;
     }
     else if(timeUnit == "weeks" || timeUnit == "w"){
@@ -177,7 +182,50 @@ void ofxMoment::add(int num, string timeUnit){
         return;
     }
     
-    currDT += ts;
+    datettime += ts;
+}
+
+Poco::Timespan ofxMoment::diff(Poco::DateTime &datetime){
+    return currDT-datetime;
+}
+
+int ofxMoment::diff(ofxMoment& moment, string timeUnit){
+    return diff(*this, moment, timeUnit);
+}
+
+int ofxMoment::diff(ofxMoment& a, ofxMoment& b, string timeUnit){
+    Poco::Timespan ts = a.currDT-b.currDT;
+    
+    if(timeUnit == "years" || timeUnit == "y"){
+        return floor(diff(a,b,"months")/12);
+    }
+    if(timeUnit == "months" || timeUnit == "M"){
+        // TODO : actual months
+        int months = ((a.years() - b.years()) * 12) + (a.months() - b.months());
+        return months;
+    }
+    else if(timeUnit == "weeks" || timeUnit == "w"){
+        return floor(diff(a,b,"days")/7);
+    }
+    else if(timeUnit == "days" || timeUnit == "d"){
+        return floor(ts.totalHours()/24);
+    }
+    else if(timeUnit == "hours" || timeUnit == "h"){
+        return ts.totalHours();
+    }
+    else if(timeUnit == "minutes" || timeUnit == "m"){
+        return ts.totalMinutes();
+    }
+    else if(timeUnit == "seconds" || timeUnit == "s"){
+        return ts.totalSeconds();
+    }
+    else if(timeUnit == "milliseconds" || timeUnit == "ms"){
+        return ts.totalMilliseconds();
+    }
+    else{
+        ofLogError("ofxMoment","Invalid time unit '"+timeUnit+"'");
+        return 0;
+    }
 }
 
 void ofxMoment::subtract(int num, string timeUnit){
