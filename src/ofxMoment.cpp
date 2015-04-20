@@ -10,11 +10,15 @@
 
 ofxMoment::ofxMoment(){
     valid = true;
+    Poco::DateTime cdt;
+    currDT = Poco::LocalDateTime(currDT.tzd(), cdt);
 }
 
 ofxMoment::ofxMoment(string timeStr){
     int tzd;
-    valid = Poco::DateTimeParser::tryParse(timeStr, currDT, tzd);
+    Poco::DateTime cdt;
+    valid = Poco::DateTimeParser::tryParse(timeStr, cdt, tzd);
+    currDT = Poco::LocalDateTime(tzd, cdt);
 }
 
 
@@ -136,7 +140,7 @@ void ofxMoment::add(int num, string timeUnit){
     add(currDT, num, timeUnit);
 }
 
-void ofxMoment::add(Poco::DateTime& datettime, int num, string timeUnit){
+void ofxMoment::add(Poco::LocalDateTime& datettime, int num, string timeUnit){
     Poco::Timespan ts;
     if(timeUnit == "years" || timeUnit == "y"){
         DT dt = getDT(datettime);
@@ -185,7 +189,7 @@ void ofxMoment::add(Poco::DateTime& datettime, int num, string timeUnit){
     datettime += ts;
 }
 
-Poco::Timespan ofxMoment::diff(Poco::DateTime &datetime){
+Poco::Timespan ofxMoment::diff(Poco::LocalDateTime &datetime){
     return currDT-datetime;
 }
 
@@ -194,7 +198,7 @@ int ofxMoment::diff(ofxMoment& moment, string timeUnit){
 }
 
 int ofxMoment::diff(ofxMoment& a, ofxMoment& b, string timeUnit){
-    Poco::Timespan ts = a.currDT-b.currDT;
+    Poco::Timespan ts = a.currDT.timestamp()-b.currDT.timestamp();
     
     if(timeUnit == "years" || timeUnit == "y"){
         return floor(diff(a,b,"months")/12);
@@ -236,7 +240,7 @@ DT ofxMoment::getDT(){
     getDT(currDT);
 }
 
-DT ofxMoment::getDT(Poco::DateTime datetime){
+DT ofxMoment::getDT(Poco::LocalDateTime datetime){
     DT dt;
     dt.year = datetime.year();
     dt.month = datetime.month();
@@ -247,6 +251,7 @@ DT ofxMoment::getDT(Poco::DateTime datetime){
     dt.ms = datetime.millisecond();
     dt.us = datetime.microsecond();
     dt.jd = datetime.julianDay();
+    dt.tzd = datetime.tzd();
     return dt;
 }
 
@@ -254,10 +259,14 @@ bool ofxMoment::validDT(DT dt){
     return Poco::DateTime::isValid(dt.year, dt.month, dt.day, dt.hour, dt.min, dt.sec, dt.ms, dt.us);
 }
 
-bool ofxMoment::assignDT(Poco::DateTime& datetime, DT dt){
+bool ofxMoment::assignDT(Poco::LocalDateTime& datetime, DT dt){
     bool vdt = validDT(dt);
     if(vdt){
-        datetime.assign(dt.year, dt.month, dt.day, dt.hour, dt.min, dt.sec, dt.ms, dt.us);
+        datetime.assign(dt.tzd, dt.year, dt.month, dt.day, dt.hour, dt.min, dt.sec, dt.ms, dt.us);
     }
     return vdt;
+}
+
+string ofxMoment::weekday(){
+    return format("%W");
 }

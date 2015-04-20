@@ -27,7 +27,7 @@ struct DT{
     int sec = 0;
     int ms = 0;
     int us = 0;
-//    int tzd = 0;
+    int tzd = 0;
     double jd = 0.0;
 };
 class ofxMoment{
@@ -86,17 +86,18 @@ public:
     void years(int year);
     int diff(ofxMoment& moment, string timeUnit="ms");
     static int diff(ofxMoment& a, ofxMoment& b, string timeUnit="ms");
+    string weekday();
     void add(int num, string timeUnit);
     void subtract(int num, string timeUnit);
-    DT getDT();
 protected:
-    Poco::DateTime currDT;
+    Poco::LocalDateTime currDT;
     bool valid;
     
-    bool assignDT(Poco::DateTime& datetime, DT dt);
+    bool assignDT(Poco::LocalDateTime& datetime, DT dt);
     bool validDT(DT dt);
     
-    void add(Poco::DateTime& datetime, int num, string timeUnit);
-    Poco::Timespan diff(Poco::DateTime& datetime);
-    static DT getDT(Poco::DateTime datetime);
+    void add(Poco::LocalDateTime& datetime, int num, string timeUnit);
+    Poco::Timespan diff(Poco::LocalDateTime& datetime);
+    static DT getDT(Poco::LocalDateTime datetime);
+    DT getDT();
 };
