@@ -89,28 +89,28 @@ void ofxMoment::hours(int hour){
 }
 
 
-int ofxMoment::days(){
+int ofxMoment::day(){
     return currDT.day();
 }
 
-void ofxMoment::days(int day){
+void ofxMoment::day(int dayNum){
     DT dt = getDT(currDT);
-    dt.day = day;
+    dt.day = dayNum;
     if(!validDT(dt)){
         dt.day = (dt.day - Poco::DateTime::daysOfMonth(dt.year, dt.month));
         add(1, "months");
-        days(dt.day);
+        day(dt.day);
     }
     else{
         assignDT(currDT, dt);
     }
 }
 
-int ofxMoment::months(){
+int ofxMoment::month(){
     return currDT.month();
 }
 
-void ofxMoment::months(int month){
+void ofxMoment::month(int month){
     DT dt = getDT(currDT);
     dt.month = month;
     if(dt.month > 12){
@@ -149,7 +149,7 @@ void ofxMoment::add(Poco::LocalDateTime& datettime, int num, string timeUnit){
         return;
     }
     else if(timeUnit == "months" || timeUnit == "M"){
-        int m = months()+num;
+        int m = month()+num;
         if(m <= 0){
             int yDiff = 0;
             DT dt = getDT(datettime);
@@ -158,7 +158,7 @@ void ofxMoment::add(Poco::LocalDateTime& datettime, int num, string timeUnit){
             assignDT(datettime, dt);
         }
         else{
-            months(m);
+            month(m);
         }
         
         return;
@@ -205,7 +205,7 @@ int ofxMoment::diff(ofxMoment& a, ofxMoment& b, string timeUnit){
     }
     if(timeUnit == "months" || timeUnit == "M"){
         // TODO : actual months
-        int months = ((a.years() - b.years()) * 12) + (a.months() - b.months());
+        int months = ((a.years() - b.years()) * 12) + (a.month() - b.month());
         return months;
     }
     else if(timeUnit == "weeks" || timeUnit == "w"){
@@ -269,4 +269,47 @@ bool ofxMoment::assignDT(Poco::LocalDateTime& datetime, DT dt){
 
 string ofxMoment::weekday(){
     return format("%W");
+}
+
+void ofxMoment::startOf(string timeUnit){
+    // the following switch intentionally omits break keywords
+    // to utilize falling through the cases.
+//    switch (timeUnit) {
+//        case 'year':
+//            this.month(0);
+//            /* falls through */
+//        case 'quarter':
+//        case 'month':
+//            this.date(1);
+//            /* falls through */
+//        case 'week':
+//        case 'isoWeek':
+//        case 'day':
+//            this.hours(0);
+//            /* falls through */
+//        case 'hour':
+//            this.minutes(0);
+//            /* falls through */
+//        case 'minute':
+//            this.seconds(0);
+//            /* falls through */
+//        case 'second':
+//            this.milliseconds(0);
+//    }
+//    
+//    // weeks are a special case
+//    if (units === 'week') {
+//        this.weekday(0);
+//    }
+//    if (units === 'isoWeek') {
+//        this.isoWeekday(1);
+//    }
+//    
+//    // quarters are also special
+//    if (units === 'quarter') {
+//        this.month(Math.floor(this.month() / 3) * 3);
+//    }
+    if(timeUnit == "year"){
+        month(0);
+    }
 }

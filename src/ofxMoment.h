@@ -76,11 +76,11 @@ public:
     int hours();
     void hours(int hour);
     
-    int days();
-    void days(int day);
+    int day();
+    void day(int dayNum);
     
-    int months();
-    void months(int month);
+    int month();
+    void month(int month);
     
     int years();
     void years(int year);
@@ -89,6 +89,7 @@ public:
     string weekday();
     void add(int num, string timeUnit);
     void subtract(int num, string timeUnit);
+    void startOf(string timeUnit);
 protected:
     Poco::LocalDateTime currDT;
     bool valid;
